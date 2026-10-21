@@ -18,7 +18,7 @@
   <main id="app" aria-label="ぷりんラッシュ">
     <canvas id="gameCanvas" aria-label="ゲーム画面"></canvas>
 
-    <!-- ゲーム中 HUD -->
+    <!-- In-game HUD -->
     <div id="hud" class="hud is-hidden" aria-hidden="true">
       <div class="hud-top">
         <div class="hud-left">
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <!-- 操作ボタン（画面左右のどこでも反応します） -->
+    <!-- Control hints; taps anywhere on the matching half of the screen are accepted -->
     <div id="controls" class="controls is-hidden" aria-hidden="true">
       <div class="control-side">
         <div id="slideVisual" class="control-button slide-button">
@@ -69,7 +69,7 @@
       <strong id="announceTitle"></strong>
     </div>
 
-    <!-- ホーム -->
+    <!-- Home -->
     <section id="homeScreen" class="screen home is-active">
       <header class="home-top">
         <div class="mini-brand">
@@ -127,7 +127,7 @@
       </div>
     </section>
 
-    <!-- ポーズ -->
+    <!-- Pause -->
     <section id="pauseScreen" class="screen overlay pause-screen" aria-hidden="true">
       <div class="pause-card">
         <div class="sheet-ornament">☁</div>
@@ -143,7 +143,7 @@
       </div>
     </section>
 
-    <!-- リザルト -->
+    <!-- Result -->
     <section id="resultScreen" class="screen overlay result-screen" aria-hidden="true">
       <div class="result-card">
         <div class="result-topline">RESULT</div>
@@ -177,7 +177,7 @@
       </div>
     </section>
 
-    <!-- なかま（ショップ） -->
+    <!-- Characters (shop) -->
     <section id="shopScreen" class="screen overlay sheet-screen" aria-hidden="true">
       <div class="sheet backdrop-close" data-close="shop"></div>
       <div class="sheet-panel">
@@ -198,7 +198,7 @@
       </div>
     </section>
 
-    <!-- デイリーミッション -->
+    <!-- Daily missions -->
     <section id="missionsScreen" class="screen overlay sheet-screen" aria-hidden="true">
       <div class="sheet backdrop-close" data-close="missions"></div>
       <div class="sheet-panel">

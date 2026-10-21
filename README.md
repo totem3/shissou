@@ -1,81 +1,124 @@
-# ぷりんラッシュ！ / PURIN RUSH
+# PURIN RUSH
 
-スマートフォンの縦画面ブラウザ向け、Canvas 2D 製のエンドレスランナーです。
-外部の画像・音声素材は使っておらず、キャラクター、背景、UI 装飾、BGM、効果音はすべてプログラムで生成しています。
+A portrait-first endless runner for mobile Safari, built with Canvas 2D.
+All game visuals and audio are generated locally. The project does not ship
+third-party images, audio files, font files, or JavaScript libraries.
 
-## 起動方法
+The in-game text is Japanese.
 
-静的ファイルのみで動作します。ビルドは不要です。
+## Run locally
 
-リポジトリのルートで以下を実行します。
+The game is a static site with no build step. From the repository root:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-ブラウザで `http://localhost:8000/` を開いてください。
+Open <http://localhost:8000/>.
 
-iPhone では Safari で開き、「共有」→「ホーム画面に追加」でアプリのように起動できます。
-なお、オフライン起動用の Service Worker は未実装です。
+On iPhone, open the page in Safari and use Share > Add to Home Screen to launch
+it like an app. A web app manifest is included, but no service worker is
+implemented, so offline launch is not supported.
 
-## 操作
+## Controls
 
-- **画面右側をタップ** — ジャンプ
-- **ジャンプ中にもう一度右側をタップ** — 2段ジャンプ
-- **画面左側をタップ** — スライド
-- **ジャンプ中に左側をタップ** — 急降下し、着地後にスライド
-- キーボード: `Space` / `↑` / `W` でジャンプ、`↓` / `S` / `Shift` でスライド
-- ポーズ: 画面右上の一時停止ボタン、または `Esc` / `P`
+- Tap the right half of the screen: jump
+- Tap the right half again while airborne: double jump
+- Tap the left half: slide
+- Tap the left half while airborne: fast-fall, then slide on landing
+- Keyboard: `Space`, `ArrowUp`, or `W` to jump; `ArrowDown`, `S`, or `Shift` to slide
+- Pause: the button in the top-right corner, or `Esc` / `P`
 
-## ゲーム内容
+## Gameplay
 
-- スイーツを集めてコンボを伸ばし、スコアとコインを獲得
-- 3つのハート制。ハートを集めると回復
-- フィーバーゲージが満タンになると一定時間フィーバー状態になり、障害物を粉砕
-- ゴールドスイーツ、ニアミスボーナス、高台のスイーツアーチ
-- 距離に応じて4つのステージと配色が変化
-- コインで4種類のキャラクター（なかま）を解放。ジャンプ力・スライド時間・磁力に個性あり
-- デイリーミッション（毎日0:00にリセット、端末のローカル時刻基準）
-- ベストスコア、コイン、キャラクター、デイリー進捗を `localStorage` に保存
-- 画面サイズと描画性能に応じた Canvas 解像度の自動調整
+- Collect sweets, build combos, and earn score and coins.
+- Three hearts; heart pickups restore health.
+- Fill the fever gauge to enter a timed fever state and smash obstacles.
+- Gold sweets, near-miss bonuses, and elevated sweet arches.
+- Four stages with distinct palettes based on distance.
+- Four characters, three unlockable with coins, with different jump, slide, and
+  magnet traits.
+- Daily missions reset at local midnight.
+- Best score, coins, selected character, owned characters, and daily progress are
+  stored in `localStorage`.
+- Canvas resolution adapts to screen size and measured rendering performance.
 
-## ファイル構成
+## File structure
 
 ```text
 .
-├── index.html               # 画面構造、HUD、各オーバーレイ
-├── style.css                # レイアウト、UI、セーフエリア、レスポンシブ
-├── game.js                  # ゲーム本体（描画、物理、入力、音声、保存、UI制御）
-├── manifest.webmanifest     # PWA マニフェスト
-└── icons/                   # アプリアイコン（SVG / PNG）
+├── index.html
+├── style.css
+├── game.js
+├── manifest.webmanifest
+├── LICENSE
+├── NOTICE
+├── README.md
+└── icons/
+    ├── apple-touch-icon.png
+    ├── icon-192.png
+    ├── icon-512.png
+    └── icon.svg
 ```
 
-## 開発メモ
+## Development notes
 
-- 保存データのキーは `purin-rush-save-v1` です。セーブ形式を変更するときは `normalizeSave()` とキーのバージョン管理を確認してください。
-- 主要なバランス値は `game.js` の `FEVER_MAX`、`FEVER_DURATION`、`BASE_JUMP`、`BASE_GRAVITY`、`STAGES`、`SKINS`、`MISSIONS` にまとまっています。
-- キャンバス描画解像度は `DPR` で管理しています。デバッグ用 URL では自動解像度調整を無効化し、検証時の見た目を固定しています。
-- 外部アセットを追加する場合は、`manifest.webmanifest` のアイコンやキャッシュ方針もあわせて見直してください。
+- The save key is `purin-rush-save-v1`. When changing the schema, update
+  `normalizeSave()` and the key/version handling together.
+- Main balance values live in `game.js`: `FEVER_MAX`, `FEVER_DURATION`,
+  `BASE_JUMP`, `BASE_GRAVITY`, `STAGES`, `SKINS`, and `MISSIONS`.
+- Rendering scale is tracked by `DPR`. In `?debug` mode, adaptive resolution is
+  disabled so QA captures keep a fixed resolution.
+- If you add external assets, update the manifest, add the required license and
+  attribution files, and update `NOTICE`.
 
-### デバッグ API
+### Debug API
 
-`http://localhost:8000/?debug` で起動すると、`window.__PURIN__` から状態確認やテスト用操作ができます。
+Start the game with `?debug`:
+
+```text
+http://localhost:8000/?debug
+```
+
+The debug API is then available under `window.__PURIN__`:
 
 ```js
-__PURIN__.state        // モード、スコア、距離、ハート、プレイヤー状態など
+__PURIN__.state        // mode, score, distance, hearts, player state, etc.
+__PURIN__.player
+__PURIN__.game
+__PURIN__.save
+__PURIN__.obstacles
+__PURIN__.candies
 __PURIN__.startRun()
-__PURIN__.pause() / __PURIN__.resume()
+__PURIN__.pause() / __PURIN__.resume() / __PURIN__.home()
 __PURIN__.die()
-__PURIN__.warp(1000)   // 距離を進める
-__PURIN__.setStage(2)  // ステージ変更
-__PURIN__.fever()      // フィーバー開始
+__PURIN__.warp(1000)   // advance distance
+__PURIN__.setStage(2)  // change stage
+__PURIN__.fever()      // start fever mode
 __PURIN__.addCoins(500)
+__PURIN__.spawnObstacle(...)
+__PURIN__.spawnCandyPattern(...)
 ```
 
-本番確認では `?debug` を外した URL を使用してください。
+Use a URL without `?debug` for production checks.
 
-## 動作確認
+## Verification
 
-- iPhone 相当のビューポート（390×844、390×667、320×568、DPR 2/3）でレイアウトとタッチ操作を確認済み
-- WebKit（Safari エンジン）でタッチ操作、音声のアンロック、リザルト、ショップ、保存の復元を確認済み
-- デスクトップ幅では中央にスマートフォンサイズのレイアウトを表示
+- Layout and touch controls were checked at iPhone-sized viewports:
+  390x844, 390x667, and 320x568, at DPR 2 and 3.
+- WebKit checks covered touch input, audio unlock, the result screen, the shop,
+  and save restoration.
+- At desktop widths, the phone-sized layout is centered in the viewport.
+
+## AI assistance
+
+This project was developed with substantial assistance from an AI coding agent.
+The human author defined the requirements, reviewed generated output, and
+directed revisions. See `NOTICE` for details.
+
+## License
+
+This repository is source-available, not open source. All rights are reserved.
+See `LICENSE` for the exact terms and `NOTICE` for AI-assistance, third-party
+asset, and trademark disclosures. No permission is granted beyond the terms in
+`LICENSE`.
