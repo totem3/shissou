@@ -116,6 +116,11 @@ This project was developed with substantial assistance from an AI coding agent.
 The human author defined the requirements, reviewed generated output, and
 directed revisions. See `NOTICE` for details.
 
+## Contributions
+
+Pull requests are disabled. This is a personal project and does not accept code
+contributions.
+
 ## License
 
 This repository is source-available, not open source. All rights are reserved.
