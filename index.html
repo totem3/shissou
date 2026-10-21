@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffd4df">
+  <meta name="description" content="あまい世界をかけぬける、ひとくちサイズの疾走ゲーム。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ぷりんラッシュ">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>ぷりんラッシュ！ | PURIN RUSH</title>
+</head>
+<body>
+  <main id="app" aria-label="ぷりんラッシュ">
+    <canvas id="gameCanvas" aria-label="ゲーム画面"></canvas>
+
+    <!-- ゲーム中 HUD -->
+    <div id="hud" class="hud is-hidden" aria-hidden="true">
+      <div class="hud-top">
+        <div class="hud-left">
+          <div id="hearts" class="hearts" aria-label="のこりハート"></div>
+        </div>
+        <div class="hud-center">
+          <span class="hud-score-label">SCORE</span>
+          <strong id="scoreValue" class="hud-score">0</strong>
+          <span class="hud-distance"><b id="distanceValue">0</b> m</span>
+        </div>
+        <div class="hud-right">
+          <div class="run-coins" aria-label="コイン">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.74 5.56 6.14.9-4.44 4.32 1.05 6.11L12 16.6l-5.49 2.89 1.05-6.11L3.12 9.06l6.14-.9L12 2.6z"/></svg>
+            <span id="coinRunValue">0</span>
+          </div>
+          <button id="pauseButton" class="round-button hud-pause" data-ui="1" aria-label="ポーズ">
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+      <div class="fever-wrap">
+        <span class="fever-word">FEVER</span>
+        <div class="fever-track">
+          <div id="feverFill" class="fever-fill"></div>
+          <div class="fever-glint"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作ボタン（画面左右のどこでも反応します） -->
+    <div id="controls" class="controls is-hidden" aria-hidden="true">
+      <div class="control-side">
+        <div id="slideVisual" class="control-button slide-button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>
+          <span>スライド</span>
+        </div>
+      </div>
+      <div class="control-side right">
+        <div id="jumpVisual" class="control-button jump-button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg>
+          <span>ジャンプ</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="announce" class="announce" role="status" aria-live="polite">
+      <span id="announceKicker"></span>
+      <strong id="announceTitle"></strong>
+    </div>
+
+    <!-- ホーム -->
+    <section id="homeScreen" class="screen home is-active">
+      <header class="home-top">
+        <div class="mini-brand">
+          <span class="mini-brand-dot"></span>
+          <span>PURIN RUSH</span>
+        </div>
+        <button id="homeSoundButton" class="round-button glass" data-ui="1" aria-label="サウンド切替">
+          <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5-1.6a6 6 0 010 9.2M18.9 4a10.5 10.5 0 010 16"/></svg>
+          <svg class="sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zM17 9l5 6m0-6l-5 6"/></svg>
+        </button>
+      </header>
+
+      <div class="logo-wrap">
+        <div class="logo-kicker">SWEET DASH ADVENTURE</div>
+        <h1 class="logo" aria-label="ぷりんラッシュ">
+          <span class="logo-purin">ぷりん</span>
+          <span class="logo-rush">ラッシュ</span>
+          <span class="logo-bang">!</span>
+        </h1>
+        <p class="logo-caption">あまい世界を、かけぬけろ。</p>
+      </div>
+
+      <div class="home-bottom">
+        <div class="best-strip">
+          <div class="best-item">
+            <span class="best-label">BEST SCORE</span>
+            <strong id="homeBest">0</strong>
+          </div>
+          <span class="best-divider"></span>
+          <div class="best-item coin-item">
+            <span class="best-label">COIN</span>
+            <strong><span class="tiny-star">★</span><span id="homeCoins">0</span></strong>
+          </div>
+        </div>
+
+        <button id="playButton" class="play-button" data-ui="1">
+          <span class="play-shine"></span>
+          <span class="play-label">あそぶ</span>
+          <span class="play-sub">TAP TO RUN</span>
+        </button>
+
+        <div class="home-secondary">
+          <button id="shopButton" class="secondary-button" data-ui="1">
+            <span class="secondary-icon">☺</span>
+            <span>なかま</span>
+          </button>
+          <button id="missionsButton" class="secondary-button" data-ui="1">
+            <span class="secondary-icon">✦</span>
+            <span>ミッション</span>
+            <span id="dailyDot" class="daily-dot" hidden></span>
+          </button>
+        </div>
+
+        <p class="home-hint"><span>右タップでジャンプ</span><i></i><span>左タップでスライド</span></p>
+      </div>
+    </section>
+
+    <!-- ポーズ -->
+    <section id="pauseScreen" class="screen overlay pause-screen" aria-hidden="true">
+      <div class="pause-card">
+        <div class="sheet-ornament">☁</div>
+        <h2>ひとやすみ</h2>
+        <p>つづきから、もうひとっ走り。</p>
+        <button id="resumeButton" class="primary-button" data-ui="1">つづける</button>
+        <div class="pause-actions">
+          <button id="pauseSoundButton" class="soft-button" data-ui="1">
+            <span class="pause-sound-label">サウンド ON</span>
+          </button>
+          <button id="pauseHomeButton" class="soft-button" data-ui="1">ホームへ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- リザルト -->
+    <section id="resultScreen" class="screen overlay result-screen" aria-hidden="true">
+      <div class="result-card">
+        <div class="result-topline">RESULT</div>
+        <div class="result-title-row">
+          <h2 id="resultTitle">ランしゅうりょう</h2>
+          <div id="newBest" class="new-best" hidden>NEW BEST!</div>
+        </div>
+        <div class="result-score-label">SCORE</div>
+        <div id="resultScore" class="result-score">0</div>
+        <div class="result-stats">
+          <div class="result-stat">
+            <span>きょり</span>
+            <strong id="resultDistance">0 m</strong>
+          </div>
+          <div class="result-stat">
+            <span>スイーツ</span>
+            <strong id="resultSweets">0</strong>
+          </div>
+          <div class="result-stat">
+            <span>コイン</span>
+            <strong id="resultCoins">+0</strong>
+          </div>
+          <div class="result-stat">
+            <span>最大コンボ</span>
+            <strong id="resultCombo">0</strong>
+          </div>
+        </div>
+        <div id="resultDaily" class="result-daily"></div>
+        <button id="retryButton" class="primary-button" data-ui="1">もういちど</button>
+        <button id="resultHomeButton" class="text-button" data-ui="1">ホームへ もどる</button>
+      </div>
+    </section>
+
+    <!-- なかま（ショップ） -->
+    <section id="shopScreen" class="screen overlay sheet-screen" aria-hidden="true">
+      <div class="sheet backdrop-close" data-close="shop"></div>
+      <div class="sheet-panel">
+        <div class="sheet-grab"></div>
+        <header class="sheet-head">
+          <div>
+            <span class="sheet-kicker">FRIENDS</span>
+            <h2>なかまをえらぼう</h2>
+          </div>
+          <div class="sheet-head-right">
+            <div class="sheet-coins"><span class="tiny-star">★</span><span id="shopCoins">0</span></div>
+            <button class="close-button" data-close="shop" aria-label="とじる" data-ui="1">×</button>
+          </div>
+        </header>
+        <p class="sheet-lead">すこしずつ、とくちょうがちがうよ。</p>
+        <div id="shopList" class="shop-list"></div>
+        <p class="sheet-note">コインはランでスイーツをあつめるとふえるよ。</p>
+      </div>
+    </section>
+
+    <!-- デイリーミッション -->
+    <section id="missionsScreen" class="screen overlay sheet-screen" aria-hidden="true">
+      <div class="sheet backdrop-close" data-close="missions"></div>
+      <div class="sheet-panel">
+        <div class="sheet-grab"></div>
+        <header class="sheet-head">
+          <div>
+            <span class="sheet-kicker">DAILY</span>
+            <h2>きょうのミッション</h2>
+          </div>
+          <div class="sheet-head-right">
+            <div class="sheet-coins"><span class="tiny-star">★</span><span id="missionsCoins">0</span></div>
+            <button class="close-button" data-close="missions" aria-label="とじる" data-ui="1">×</button>
+          </div>
+        </header>
+        <div id="missionList" class="mission-list"></div>
+        <p class="sheet-note">毎日0:00にリセット。コインをあつめて、なかまをふやそう。</p>
+      </div>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div class="rotate-hint">
+      <div class="rotate-phone"></div>
+      <p>スマホをたてにしてね</p>
+    </div>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

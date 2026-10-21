@@ -1,0 +1,21 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and local environment
+*.log
+.env
+.env.*
+!.env.example
+
+# Optional tooling / test artifacts
+node_modules/
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+artifacts/
